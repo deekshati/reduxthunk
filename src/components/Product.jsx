@@ -5,6 +5,8 @@ import {Button} from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { add } from './store/cartSlice';
 import { getProducts } from './store/productSlice';
+import { Alert } from 'react-bootstrap';
+import StatusCode from '../utils/StatusCode';
 
 
 /*In very first case redux was only able to handle synchronus function but now with reduxthunk/reduxmiddleware redux can aslo handle 
@@ -13,13 +15,19 @@ async calls of apis*/
 const Product = () => {
   const dispatch=useDispatch();
   //const [products,getProducts]=useState([]);
-  const {data:products}=useSelector((state)=>state.products);
+  const {data:products,status}=useSelector((state)=>state.products);
 
   useEffect(()=>{
     //dispatch action for fetchProducts
     dispatch(getProducts());
   },[]);
-  
+
+  if(status === StatusCode.LOADING){
+    return <p>Loading ...</p>
+  }
+  if(status===StatusCode.ERROR){
+    return <Alert key='danger' variant='danger'>oops! Something went wrong!! Try again later</Alert>
+  }
   const addTocart=(product)=>{
     //dispatch an add action
     dispatch(add(product))
